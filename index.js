@@ -9,8 +9,8 @@ if(!day || process.argv.length < 3) {
 }
 async function run() {
   const [code, input] = await Promise.all([
-    import(`./src/day-${day}/part${part}.js`),
-    fs.readFile(path.join(__dirname, `./src/day-${day}/input.txt`), 'utf8')
+    import(`./src/day${day}/part${part}.js`),
+    fs.readFile(path.join(__dirname, `./src/day${day}/input.txt`), 'utf8')
   ])
   console.log("Result:", code.default(input))
 }
