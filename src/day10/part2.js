@@ -33,7 +33,7 @@ const clearColor = "\x1b[0m"
 
 const withColor = (s, color) => `${colorMap[color]}${s}${clearColor}`;
 
-function aStar({ start, getHeuristic = () => 0, getNeighbours, isTarget }) {
+function aStar({ start, getHeuristic = () => 0, getNeighbours, isTarget, onFail = () => {} }) {
   const open = [{ position: start, score: 0, heuristic: 0, parent: null }]
   const closed = []
   while(open.length) {
@@ -65,6 +65,7 @@ function aStar({ start, getHeuristic = () => 0, getNeighbours, isTarget }) {
       return current;
     }
   }
+  onFail(closed)
 }
 
 const pathForEach = (path, action) => {
@@ -134,56 +135,38 @@ module.exports = input => {
   const pathStore = {};
   [closedPath, ...closedPath.alternativeParents].forEach(
     p => pathForEach(p, segment => {
-      const pipeType = grid[segment.position[1]][segment.position[0]]; //TODO if S, it might need filtering
+      const pipeType = grid[segment.position[1]][segment.position[0]];
       const pos = [segment.position[0] * 3 + 1, segment.position[1] * 3 + 1]
       const allOccupied = [pos, ...mapCoords(pos[0], pos[1], pipeType, largeGrid)];
       if(allOccupied.length === 1) console.log("HERES AN ISSUE", allOccupied)
       allOccupied.forEach(p => {
-        pathStore[p.join(",")] = true;
+        pathStore[p.join(",")] = "blue";
       });
     })
   );
-
-
-  for (let y = 0; y < largeGrid.length; y++) {
-    console.log(
-      largeGrid[y].map(v => v ? "□" : " ")
-      .map((c, index) => pathStore[`${index},${y}`] ? withColor(c, "blue") : c)
-      .join("")
-    )
-  }
-
-
-  fs.writeFileSync("getgetGET", (Object.keys(pathStore)).join("\n"))
 
   let containedCells = 0;
   for (let y = 0; y < grid.length; y++) {
     let outputString = "";
     for (let x = 0; x < grid[y].length; x++) {
-      isPartOfPath = pathStore[`${x * 3 + 1},${y * 3 + 1}`];
-      if (isPartOfPath) {
-        outputString += withColor(grid[y][x], "blue");
-      } else {
-
-        const pipeType = grid[y][x];
-        if(pipeType !== ".") {
-          outputString += withColor(grid[y][x], "gray");
-          continue;
+      pathEntry = pathStore[`${x * 3 + 1},${y * 3 + 1}`];
+      if (pathEntry) {
+        if(pathEntry === "red") {
+          pathStore[`${x * 3 + 1},${y * 3 + 1}`] = "green";
+          containedCells++;
         }
-
+      } else {
         const path = aStar({
           start: [x * 3 + 1, y * 3 + 1],
           getNeighbours: (position) => {
             const neighbours = mapCoords(position[0], position[1], "S", largeGrid);
             return neighbours
               .filter(n => {
-                //const smallCoords = `${(n[0] - 1) / 3},${(n[1] - 1) / 3}`
-                return !pathStore[n.join(",")]// || !largeGrid[n[1]][n[0]]
+                return !pathStore[n.join(",")]
               });
           },
           isTarget: current => {
             const state = pathStore[current.position.join(",")]
-            // const state = pathStore[`${(current.position[0] - 1) / 3},${(current.position[1] - 1) / 3}`]
             if (state != null) {
               return !state;
             }
@@ -193,9 +176,14 @@ module.exports = input => {
               || (current.position[1] === largeGrid.length - 1)
           },
           getHeuristic: position => {
-            const xDist = largeGrid[0].length/2 - Math.abs(largeGrid[0].length/2 - position[0]);
-            const yDist = largeGrid.length/2 - Math.abs(largeGrid.length/2 - position[1])
+            const xDist = largeGrid[0].length / 2 - Math.abs(largeGrid[0].length / 2 - position[0]);
+            const yDist = largeGrid.length / 2 - Math.abs(largeGrid.length / 2 - position[1])
             return Math.min(xDist, yDist)
+          },
+          onFail: (closed) => {
+            closed.forEach(p => {
+              pathStore[p.join(",")] = "red";
+            })
           }
         })
 
@@ -206,11 +194,21 @@ module.exports = input => {
           outputString += grid[y][x]
         } else {
           containedCells++;
+          pathStore[`${x * 3 + 1},${y * 3 + 1}`] = "green";
           outputString += withColor(grid[y][x], "green");
         }
       }
     }
-    console.log(outputString);
   }
+
+  for (let y = 0; y < largeGrid.length; y++) {
+    console.log(
+      largeGrid[y].map(v => v ? "□" : "·")
+      .map((c, index) => pathStore[`${index},${y}`] ? withColor(c, pathStore[`${index},${y}`]) : c)
+      .join("")
+    )
+  }
+
+
   return containedCells;
 };
