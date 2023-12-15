@@ -16,7 +16,15 @@ module.exports = input => {
         acc.push(entry.substring(0, dataIndex) + "#" + entry.substring(dataIndex + 1))
         return acc
       }, [])
-    })
+        .filter(p => {
+          const readyString = p.substring(0, dataIndex + 1)
+          .split(/\.+/)
+          .filter(Boolean)
+          .map(s => s.length)
+          .join(",")
+          return pattern.startsWith(readyString.substring(0, readyString.length - 2))
+        })
+    });
 
     total += possibilities.filter(p =>
       p.split(/\.+/).filter(Boolean).map(s => s.length).join(",") === pattern
