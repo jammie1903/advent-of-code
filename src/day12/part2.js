@@ -2,6 +2,7 @@ module.exports = input => {
   const lines = input
     .split("\n")
     .filter(Boolean)
+    .slice(5, 6)
     .map(line => {
       const [data, pattern] = line.split(" ");
       return {
@@ -25,13 +26,31 @@ module.exports = input => {
         const newPoss = {}
         Object.entries(possibilities).forEach(([p, count]) => {
           const arr = p.split("");
-          const copy = [...arr];
-          if (/\d/.test(copy[copy.length - 1])) {
-            arr.push(",")
-            copy[copy.length - 1] = Number(copy[copy.length - 1]) + l + 1;
-          } else {
-            copy.push(l + 1);
+          let endsInNumber = /\d/.test(arr[arr.length - 1])
+          if (l) {
+            if(endsInNumber) {
+              arr[arr.length - 1] = Number(arr[arr.length - 1]) + l + 1;
+            } else {
+              arr.push(l)
+              endsInNumber = true
+            }
           }
+          const copy = [...arr];
+          if (endsInNumber) {
+            copy.push(",")
+            arr[arr.length - 1] = Number(arr[arr.length - 1]) + 1;
+          } else {
+            arr.push(1)
+          }
+          // if (/\d/.test(copy[copy.length - 1])) {
+          //   arr.push(",")
+          //   if (l) {
+          //     arr.push(l)
+          //   }
+          //   copy[copy.length - 1] = Number(copy[copy.length - 1]) + l + 1;
+          // } else {
+          //   copy.push(l + 1);
+          // }
 
           [arr, copy].forEach(sequence => {
             const endsInNumber = /\d/.test(sequence[sequence.length - 1])
@@ -41,6 +60,8 @@ module.exports = input => {
             if(pattern[comparison](compString)) {
               newPoss[str] ||= 0;
               newPoss[str] += count;
+            } else {
+              console.log("removed: ", sequence.join(""))
             }
           })
         })
@@ -60,7 +81,7 @@ module.exports = input => {
         acc[trimmedSequence] += count;
         return acc;
       }, {})
-      // console.log(possibilities)
+      console.log(possibilities)
 
 
       // possibilities = possibilities.map(p => p.join(","));
@@ -145,6 +166,7 @@ module.exports = input => {
       comparison = "includes"
       return returnObject
     }, { });
+    console.log("result", sequentialGroups)
     console.log("result", sequentialGroups[pattern])
     total += sequentialGroups[pattern] || 0;
     // total += possibilities.filter(p =>
