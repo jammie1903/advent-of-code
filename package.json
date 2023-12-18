@@ -6,6 +6,7 @@
   "author": "Jamie Pennell <jamie.pennell@ripjar.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node index.js --test "
   }
 }
