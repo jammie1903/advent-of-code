@@ -1,8 +1,6 @@
 const fs = require("fs/promises");
 const path = require("path");
 
-console.log(process.argv)
-
 const target = process.argv[process.argv.length - 1].replace(/[^0-9\.]/g, "");
 const testRun = process.argv[process.argv.length - 2].includes("test");
 const inputFile = testRun ? "testInput.txt" : "input.txt";
