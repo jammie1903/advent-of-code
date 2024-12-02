@@ -16,11 +16,8 @@ if (!day || process.argv.length < 3) {
 async function exists(f) {
   try {
     await fs.stat(f);
-    console.log(f, "exists")
     return true;
   } catch (e) {
-    console.log(f, "does not exist", e)
-
     return false;
   }
 }
