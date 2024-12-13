@@ -1,5 +1,4 @@
 import sys
-import re
 
 content = sys.argv[1]
 
