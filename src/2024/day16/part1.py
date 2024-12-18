@@ -1,8 +1,6 @@
 import math
 import sys
 
-# I over-engineered this solution entirely, in the hope it would help with teh next part... it did not
-
 class AStar:
   def __init__(self, startNode, goalNode, getNeighbors):
     self.startNode = startNode
