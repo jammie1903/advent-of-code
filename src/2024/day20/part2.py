@@ -125,10 +125,11 @@ for index1, location1 in enumerate(path):
     jumpDist = nodeDistance(location1, location2)
     if nodeDistance(location1, location2) <= maxJumpDist:
       cheatDist = index2 - index1 - jumpDist
-      if cheatDist not in cheats:
-        cheats[cheatDist] = 0
-      cheats[cheatDist] += 1
-      total += 1
+      if cheatDist >= minCheatDist:
+        if cheatDist not in cheats:
+          cheats[cheatDist] = 0
+        cheats[cheatDist] += 1
+        total += 1
 
 print(cheats)
 print(total)
