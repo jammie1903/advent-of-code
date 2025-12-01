@@ -1,8 +1,8 @@
 {
-  "name": "advent-of-code-2023",
+  "name": "advent-of-code",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:jammie1903/advent-of-code-2023.git",
+  "repository": "git@github.com:jammie1903/advent-of-code.git",
   "author": "Jamie Pennell <jamie.pennell@ripjar.com>",
   "license": "MIT",
   "scripts": {

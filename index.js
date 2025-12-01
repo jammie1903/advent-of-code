@@ -1,7 +1,7 @@
 const fs = require("fs/promises");
 const path = require("path");
 
-const currentYear = 2024;
+const currentYear = 2025;
 
 const target = process.argv[process.argv.length - 1].replace(/[^0-9\.]/g, "");
 const testRun = process.argv[process.argv.length - 2].includes("test");
@@ -28,7 +28,7 @@ async function run() {
   const readDataFile = fs.readFile(path.join(__dirname, `./src/${currentYear}/day${day}/${inputFile}`), 'utf8');
 
   const pyFile = path.join(__dirname,`${filePath}.py`);
-  if(await exists(pyFile)) {
+  if (await exists(pyFile)) {
     const spawn = require("child_process").spawn;
     const pythonProcess = spawn('python3', [ pyFile, await readDataFile ]);
     pythonProcess.stdout.on('data', (data) => {
